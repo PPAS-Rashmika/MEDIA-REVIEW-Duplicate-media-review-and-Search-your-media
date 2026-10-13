@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Media Review — Duplicate media review</title>
+  <link rel="stylesheet" href="/static/styles.css">
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+  <svg class="icon-definitions" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs>
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7m4-7v7"/></symbol>
+    <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h5l2 3h7a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="i-scan" viewBox="0 0 24 24"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5M5 12h14"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></symbol>
+    <symbol id="i-expand" viewBox="0 0 24 24"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
+    <symbol id="i-photo" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8" cy="8" r="1.5"/><path d="m3 17 6-6 4 4 3-3 5 5"/></symbol>
+    <symbol id="i-restore" viewBox="0 0 24 24"><path d="M3 10a9 9 0 1 1 2 8M3 4v6h6M12 7v5l3 2"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10v1"/></symbol>
+  </defs></svg>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="/" aria-label="Media Review home"><span class="brand-mark"><span></span><span></span></span><span>Media <span class="brand-light">Review</span><small>Local duplicate finder</small></span></a>
+      <div class="sidebar-label">WORKSPACE</div>
+      <nav aria-label="Main navigation">
+        <button id="review-nav" class="nav-item active" type="button" aria-current="page" aria-label="Review media" title="Review media"><svg><use href="#i-grid"/></svg><span>Review media</span><span id="nav-group-count" class="nav-count">—</span></button>
+        <button id="library-nav" class="nav-item" type="button" aria-label="Search library" title="Search library"><svg><use href="#i-search"/></svg><span>Search library</span></button>
+        <button id="trash-nav" class="nav-item" type="button" aria-label="Recently deleted" title="Recently deleted"><svg><use href="#i-trash"/></svg><span>Recently deleted</span><span id="nav-trash-count" class="nav-count">0</span></button>
+      </nav>
+      <div class="scan-settings">
+        <div class="sidebar-label">SCAN SETTINGS</div>
+        <label class="check-setting"><input id="recursive" type="checkbox" checked><span>Include subfolders</span></label>
+        <label class="check-setting"><input id="include-all-files" type="checkbox" checked><span>Include other file types</span></label>
+        <div class="sensitivity-head"><label for="threshold">Image similarity</label><output id="threshold-output" for="threshold">94%</output></div>
+        <input id="threshold" type="range" min="85" max="99" value="94" step="1">
+        <div class="range-labels"><span>More matches</span><span>Stricter</span></div>
+        <p>Exact matching supports all file types. Visual similarity applies to images. Settings take effect on the next scan.</p>
+      </div>
+      <div class="sidebar-bottom"><div class="local-icon"><svg><use href="#i-check"/></svg></div><div><strong>Local processing</strong><span>Files stay on your computer.</span></div></div>
+    </aside>
+    <main class="main">
+      <header class="page-header">
+        <div><div class="eyebrow">MEDIA REVIEW</div><h1 id="page-title">Duplicate media review</h1><p id="page-subtitle">Find matching files, compare previews and choose which copy to keep.</p></div>
+        <div class="header-tag"><span></span>LOCAL WORKSPACE</div>
+      </header>
+      <section class="folder-bar" aria-label="Media folder">
+        <svg><use href="#i-folder"/></svg>
+        <div class="folder-field"><label for="folder-path">FOLDER TO SCAN</label><input id="folder-path" type="text" placeholder="Choose a folder to begin" autocomplete="off" spellcheck="false"></div>
+        <button id="browse-button" class="button secondary small" type="button">Browse</button>
+        <button id="options-button" class="button secondary small mobile-options" type="button">Scan options</button>
+        <button id="scan-button" class="button primary" type="button" disabled><svg><use href="#i-scan"/></svg><span>Scan folder</span></button>
+      </section>
+      <p class="scan-start-guide">Select a folder, then click <strong>Scan folder</strong> to begin. Scanning starts only when you request it.</p>
+      <div id="scan-progress" class="scan-progress" hidden role="status" aria-live="polite"><div><span id="scan-label">Scanning your files…</span><span id="scan-numbers"></span></div><div class="progress-track"><div id="progress-fill"></div></div></div>
+      <div id="error-banner" class="error-banner" role="alert" hidden><svg><use href="#i-info"/></svg><span id="error-text"></span><button id="error-close" type="button" aria-label="Dismiss error"><svg><use href="#i-close"/></svg></button></div>
+      <section class="stats" aria-label="Library summary">
+        <div class="stat"><span class="stat-icon neutral"><svg><use href="#i-photo"/></svg></span><div><strong id="stat-photos">—</strong><span>Files scanned</span></div></div>
+        <div class="stat"><span class="stat-icon green"><svg><use href="#i-grid"/></svg></span><div><strong id="stat-exact">—</strong><span>Exact duplicate groups</span></div></div>
+        <div class="stat"><span class="stat-icon peach"><svg><use href="#i-photo"/></svg></span><div><strong id="stat-similar">—</strong><span>Similar image pairs</span></div></div>
+        <div class="stat"><span class="stat-icon blue"><svg><use href="#i-folder"/></svg></span><div><strong id="stat-space">—</strong><span>Duplicate file size</span></div></div>
+      </section>
+      <section id="review-view" class="review-workspace" aria-label="Duplicate media review">
+        <aside class="group-panel">
+          <div class="group-panel-heading"><h2>Matches</h2><span id="group-total">0 groups</span></div>
+          <div class="filter-tabs" role="group" aria-label="Filter matches"><button data-filter="all" class="selected" type="button" aria-pressed="true">All</button><button data-filter="exact" type="button" aria-pressed="false">Exact</button><button data-filter="similar" type="button" aria-pressed="false">Similar</button></div>
+          <label class="media-filter" for="media-filter"><span>File type</span><select id="media-filter"><option value="all">All types</option><option value="image">Images</option><option value="video">Videos</option><option value="audio">Audio</option><option value="other">Other files</option></select></label>
+          <label class="image-category-filter" for="image-category-filter"><span>Image category</span><select id="image-category-filter" aria-describedby="image-category-guide"><option value="all">All categories</option><option value="screenshot">Screenshots</option><option value="downloaded">Downloaded</option><option value="text">Text images</option><option value="other">Other images</option></select></label>
+          <p id="image-category-guide" class="image-category-guide">Suggested image labels. Check the previews before removing copies.</p>
+          <label class="search-field"><svg><use href="#i-search"/></svg><input id="search" type="search" placeholder="Search filename…" aria-label="Search duplicate filenames"></label>
+          <div class="bulk-action"><button id="bulk-delete-button" class="button danger bulk-delete-button" type="button" disabled aria-describedby="bulk-delete-scope"><svg><use href="#i-trash"/></svg><span>Move all copies to trash</span></button><p id="bulk-delete-scope">Applies to the visible matches. A file is kept in every group.</p></div>
+          <div id="group-list" class="group-list" aria-label="Matching file groups"></div>
+          <div class="group-panel-footer"><span class="keycap">←</span><span class="keycap">→</span><span>to move between groups</span></div>
+        </aside>
+        <div class="comparison-panel">
+          <div id="comparison-empty" class="empty-state"><div class="empty-art"><svg><use href="#i-photo"/></svg><span><svg><use href="#i-search"/></svg></span></div><h2>Ready to scan</h2><p>Select a folder using Browse, then click Scan folder. Compare matching images, videos, audio and other files here.</p><button id="retry-button" class="button secondary" type="button" hidden>Try again</button></div>
+          <div id="comparison-content" hidden>
+            <div class="comparison-heading"><div><div class="match-topline"><span id="match-badge" class="badge exact">Exact duplicate</span><span id="match-group-number" class="subtle"></span></div><h2 id="comparison-title">Compare duplicate files</h2></div><div class="group-navigation"><button id="previous-group" class="icon-button" type="button" aria-label="Previous group"><svg class="flipped"><use href="#i-arrow"/></svg></button><button id="next-group" class="icon-button" type="button" aria-label="Next group"><svg><use href="#i-arrow"/></svg></button></div></div>
+            <p id="match-explanation" class="match-explanation"></p>
+            <p id="image-category-scope" class="image-category-scope" role="status" hidden></p>
+            <div class="photo-pair">
+              <article id="keeper-card" class="photo-card keeper"><div class="photo-card-heading"><span><span class="status-dot"></span>KEEP THIS FILE</span><span id="keeper-recommendation" class="recommendation" hidden>Higher resolution</span></div><button id="keeper-preview-button" class="photo-preview" type="button" aria-label="View keeper image at full size"><img id="keeper-preview" alt="Image selected to keep"><span class="expand-hint"><svg><use href="#i-expand"/></svg>View full size</span></button><div id="keeper-playback" class="playback-preview" hidden></div><div class="photo-info"><label class="sr-only" for="keeper-select">File to keep</label><select id="keeper-select"></select><div id="keeper-meta" class="photo-meta"></div><p id="keeper-path" class="photo-path"></p><p id="keeper-issue" class="photo-issue" hidden></p></div></article>
+              <article id="candidate-card" class="photo-card candidate"><div class="photo-card-heading"><span><span class="status-dot"></span>COMPARE THIS COPY</span><span id="candidate-format" class="format-tag"></span></div><button id="candidate-preview-button" class="photo-preview" type="button" aria-label="View comparison image at full size"><img id="candidate-preview" alt="Image being compared"><span class="expand-hint"><svg><use href="#i-expand"/></svg>View full size</span></button><div id="candidate-playback" class="playback-preview" hidden></div><div class="photo-info"><label class="sr-only" for="candidate-select">File to compare</label><select id="candidate-select"></select><div id="candidate-meta" class="photo-meta"></div><p id="candidate-path" class="photo-path"></p><p id="candidate-issue" class="photo-issue" hidden></p></div></article>
+            </div>
+            <div id="group-photo-strip" class="group-photo-strip" hidden></div>
+            <div class="review-actions"><div class="review-note"><svg><use href="#i-info"/></svg><div><strong>Review before removing a copy.</strong><span>The file marked Keep stays in its original folder.</span></div></div><div class="action-buttons"><button id="skip-group" class="button secondary" type="button">Next group<svg><use href="#i-arrow"/></svg></button><button id="delete-button" class="button danger" type="button"><svg><use href="#i-trash"/></svg>Move copy to trash</button></div></div>
+            <div class="trash-hint"><svg><use href="#i-restore"/></svg>Removed copies can be restored from Recently deleted.</div>
+          </div>
+        </div>
+      </section>
+      <section id="library-view" class="library-view" aria-label="Search scanned media" hidden>
+        <form id="library-search-form" class="library-search-form" autocomplete="off">
+          <label for="library-query" class="library-query-label">FIND FILES BY THEIR CONTENT</label>
+          <div class="library-query-row"><label class="library-query-field" for="library-query"><svg><use href="#i-search"/></svg><input id="library-query" type="search" placeholder="Search words or describe an image…" aria-describedby="library-search-guide" maxlength="256"></label><button id="library-search-button" class="button primary" type="button" disabled><svg><use href="#i-search"/></svg><span>Search</span></button></div>
+          <div class="library-options">
+            <label for="library-mode"><span>Search in</span><select id="library-mode"><option value="all">All</option><option value="text">Text in images</option><option value="visual">Objects &amp; scenes</option><option value="filename">Filenames</option></select></label>
+            <label for="library-media-type"><span>File type</span><select id="library-media-type"><option value="all">All types</option><option value="image">Images</option><option value="video">Videos</option><option value="audio">Audio</option><option value="other">Other files</option></select></label>
+            <label for="library-category"><span>Image category</span><select id="library-category"><option value="all">All categories</option><option value="screenshot">Screenshots</option><option value="downloaded">Downloaded</option><option value="text">Text images</option><option value="other">Other images</option></select></label>
+          </div>
+          <p id="library-search-guide" class="library-search-guide">Find words, names or numbers in images, or describe objects and scenes such as “car”, “dog” or “beach”. Descriptions work best in English. Text recognition uses installed Windows OCR languages. Click Search to run your query.</p>
+        </form>
+        <div id="library-index-note" class="library-index-note" hidden><svg><use href="#i-info"/></svg><span></span></div>
+        <div class="library-results-heading"><h2 id="library-results-title">Your scanned library</h2><span id="library-result-count"></span></div>
+        <p id="library-status" class="library-status" role="status" aria-live="polite"></p>
+        <div id="library-empty" class="library-empty"><span class="library-empty-icon"><svg><use href="#i-search"/></svg></span><h3 id="library-empty-title">Scan a folder to search</h3><p id="library-empty-description">Choose a folder above, then click Scan folder. Search includes every scanned file, even files without duplicates.</p></div>
+        <div id="library-results" class="library-results" aria-label="Search results"></div>
+        <div id="library-pagination" class="library-pagination" hidden><span id="library-page-summary"></span><div><button id="library-previous" class="button secondary small" type="button" disabled><svg class="flipped"><use href="#i-arrow"/></svg>Previous</button><button id="library-next" class="button secondary small" type="button" disabled>Next<svg><use href="#i-arrow"/></svg></button></div></div>
+      </section>
+      <section id="trash-view" class="trash-view" aria-label="Recently deleted files" hidden><div class="trash-heading"><div><h2>Restore removed files</h2><p>Return a file to its original folder.</p></div><button id="refresh-trash" class="button secondary small" type="button"><svg><use href="#i-restore"/></svg>Refresh</button></div><div id="trash-list"></div></section>
+      <details id="scan-errors" class="scan-errors" hidden><summary id="scan-errors-summary"></summary><div id="scan-errors-list"></div></details>
+      <footer class="page-footer"><span>Manual review. Recoverable removal.</span><span>Media Review 1.3.0 <span class="footer-dot">·</span> Local and private</span></footer>
+    </main>
+  </div>
+  <dialog id="delete-dialog" class="confirm-dialog" aria-labelledby="delete-title"><div class="dialog-icon"><svg><use href="#i-trash"/></svg></div><h2 id="delete-title">Move this copy to trash?</h2><p>The selected file will move to a recoverable folder.</p><div class="delete-summary"><img id="delete-preview" alt="File to move to trash"><div><span>MOVE TO TRASH</span><strong id="delete-filename"></strong><small id="delete-filesize"></small></div></div><div class="keep-summary"><svg><use href="#i-check"/></svg><div><span>KEEPING</span><strong id="delete-keeper"></strong></div></div><p class="dialog-note">Only the selected copy is moved. Restore it at any time from Recently deleted.</p><div class="dialog-actions"><button id="cancel-delete" class="button secondary" type="button">Keep both</button><button id="confirm-delete" class="button danger" type="button">Move to trash</button></div></dialog>
+  <dialog id="bulk-delete-dialog" class="confirm-dialog bulk-delete-dialog" aria-labelledby="bulk-delete-title" aria-describedby="bulk-delete-description"><div class="dialog-icon"><svg><use href="#i-trash"/></svg></div><h2 id="bulk-delete-title">Move all matching copies to trash?</h2><p id="bulk-delete-description"></p><p id="bulk-similar-warning" class="bulk-warning" hidden><svg><use href="#i-info"/></svg><span>This selection includes visually similar images. They can differ in framing, detail or quality. Review the files below before continuing.</span></p><div class="bulk-summary"><div><strong id="bulk-file-count"></strong><span>Copies to move</span></div><div><strong id="bulk-total-size"></strong><span>Total file size</span></div><div><strong id="bulk-keep-count"></strong><span>Files kept</span></div></div><p id="bulk-empty-plan" class="bulk-empty-plan" hidden>No copies can be removed while keeping a file in every matching group. Overlapping groups may protect additional files.</p><div id="bulk-plan-list" class="bulk-plan-list" tabindex="0" role="region" aria-label="Files included in this removal"><h3 id="bulk-files-heading">Moving to trash</h3><div id="bulk-file-list"></div><h3 class="bulk-kept-heading">Keeping in original folders</h3><div id="bulk-kept-list"></div></div><p class="dialog-note">Your selected keeper is preserved. Other groups keep their highest-resolution or largest file. Overlapping groups may keep additional files. Restore removed copies from Recently deleted.</p><div class="dialog-actions"><button id="cancel-bulk-delete" class="button secondary" type="button">Cancel</button><button id="confirm-bulk-delete" class="button danger" type="button" disabled>Move copies to trash</button></div></dialog>
+  <dialog id="image-dialog" class="image-dialog" aria-labelledby="image-title"><div class="image-dialog-toolbar"><div><strong id="image-title"></strong><span id="image-details"></span></div><div><button id="zoom-button" class="button secondary small" type="button" aria-pressed="false">Actual size</button><button id="close-image" class="icon-button" type="button" aria-label="Close full image"><svg><use href="#i-close"/></svg></button></div></div><div id="image-stage" class="image-stage"><img id="full-image" alt="Full-size photo preview"></div></dialog>
+  <dialog id="library-preview-dialog" class="library-preview-dialog" aria-labelledby="library-preview-title"><div class="image-dialog-toolbar"><div><strong id="library-preview-title"></strong><span id="library-preview-details"></span></div><button id="close-library-preview" class="icon-button" type="button" aria-label="Close file preview"><svg><use href="#i-close"/></svg></button></div><div id="library-preview-body" class="library-preview-body"></div><p id="library-preview-path" class="library-preview-path"></p></dialog>
+  <dialog id="settings-dialog" class="settings-dialog" aria-labelledby="settings-title"><div class="settings-dialog-heading"><h2 id="settings-title">Scan options</h2><button id="close-settings" class="icon-button" type="button" aria-label="Close scan options"><svg><use href="#i-close"/></svg></button></div><div id="settings-slot"></div><p class="settings-footnote">Close this panel and scan the folder to apply your settings.</p></dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden><svg><use href="#i-check"/></svg><span id="toast-text"></span><button id="toast-undo" type="button" hidden>Undo</button><button id="toast-close" type="button" aria-label="Dismiss notification"><svg><use href="#i-close"/></svg></button></div>
+</body>
+</html>

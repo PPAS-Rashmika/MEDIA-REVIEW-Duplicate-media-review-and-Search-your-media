@@ -1,0 +1,5 @@
+Source: https://raw.githubusercontent.com/huggingface/tokenizers/301277072263fb3830eb66eec7e47adadf76f1dc/LICENSE
+Upstream release: v0.23.3
+SHA-256: c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4
+The full upstream license is preserved unchanged in LICENSE.
+
