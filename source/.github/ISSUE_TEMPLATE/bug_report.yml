@@ -1,0 +1,30 @@
+name: Bug report
+description: Report a reproducible problem with Media Review.
+title: "[Bug] "
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Include what you expected to happen.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Use generated samples if a media file is needed.
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: Windows version, app version, and Python version if running from source
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Additional details
+      description: Remove private paths and filenames from logs or screenshots.

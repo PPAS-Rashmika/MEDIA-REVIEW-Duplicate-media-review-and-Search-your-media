@@ -1,0 +1,43 @@
+name: Windows checks
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: |
+            requirements.txt
+            requirements-dev.txt
+      - name: Install development dependencies
+        run: python -m pip install -r requirements-dev.txt
+      - name: Prepare media decoder
+        run: python tools/fetch_ffmpeg.py
+      - name: Prepare cloud adapter
+        run: python tools/fetch_rclone.py
+      - name: Prepare archive decoder
+        run: python tools/fetch_archive_decoder.py
+      - name: Run generated-fixture tests
+        run: python -m unittest discover -s tests -v
+      - name: Run interface harnesses
+        shell: pwsh
+        run: |
+          Get-ChildItem tests/test_*.cjs | ForEach-Object {
+            node $_.FullName
+            if ($LASTEXITCODE -ne 0) { throw "Interface checks failed: $($_.Name)" }
+          }

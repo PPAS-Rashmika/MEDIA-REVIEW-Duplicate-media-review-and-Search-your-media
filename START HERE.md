@@ -1,27 +1,22 @@
-# Media Review 1.3
+# Media Review 3.0
 
-Open **Media Review.exe** in this folder. Choose a media folder and click **Scan folder**.
+Run **Media Review.exe** to open the Windows desktop application. Keep the **models** folder beside the executable. Windows 10/11, 64-bit, and Microsoft Edge WebView2 Runtime are required. Do not move the executable into the source folder.
 
-Select **Search library** to find files, including photos without duplicates. Enter a phrase and click **Search**:
+The app opens without scanning. Choose a primary folder, optionally add separate folders or drives under **Folders & comparison setup**, review settings, and click **Scan folder**. Choose **Protected originals** or **Reference library** for locations that the app must not change.
 
-- **Text in images** finds recognized names, words and numbers inside photos.
-- **Objects & scenes** finds visual suggestions such as `car`, `dog` or `beach`. English descriptions work best.
-- **Filenames** searches names and paths across all scanned file types.
-- **All** combines these searches.
+Version 3.0 adds multiple scan locations, keep rules, completed-file caching, explicit interrupted-scan continuation, rotated/flipped/cropped photo suggestions, similar-video sampling, duplicate-folder recognition, music-tag matching, offline catalogs, CSV reports, batch renaming, empty-folder cleanup, hard links, Windows Recycle Bin options and app-trash emptying. Video timelines align sampled positions; photo comparison supports linked zoom and pan.
 
-Use the search file type and image category filters, then click Search again. Preview a result or select **Show in folder** to locate the original file.
+**File tools** previews every proposed local change. Normal **Organize files** applies to the primary scan folder. Supported local operations have recovery or undo; the preview explains the selected action. Permanent app-trash emptying has no app restore. Hard links share content until undone.
 
-Recognition depends on image quality and installed Windows OCR languages. Object matches are suggestions. Image content search covers decoded photos and the first frame of animated images; video, audio and other files can be searched by their filenames.
+Removed files in **Recently deleted** remain in a recovery folder and continue using disk space. Use the File tools trash controls when you are ready to finish cleaning. Windows Recycle Bin also retains space until emptied.
 
-Scan and search processing stay on this computer. OCR text and image embeddings are held in memory for the current scan and cleared on a new scan or when the app closes. The app starts no scan or model download automatically.
+In **Cloud files**, connect Google Drive, OneDrive or Dropbox yourself, then explicitly scan. Confirmed cloud moves, type/year organization and restoration stay inside the connected account. Older read-only accounts need reconnecting before management is available. Google Drive requires your Desktop OAuth client ID and secret. Cloud trash is an in-account **.MediaReviewTrash** recovery folder; it does not free cloud storage. Real provider sign-in and moves depend on your account and were not exercised by the generated-fixture tests.
 
-Duplicate review, Screenshot/Downloaded/Text/Other filters and recoverable bulk removal remain available. Compare previews and confirm the removal list. Copies moved into the app's recovery trash can be restored from **Recently deleted**.
+**Pause / Resume** continues the current worker while the app is open. After an interrupted run, **Resume unfinished scan** refreshes file discovery and comparison, reusing available completed-file cache records. It does not resume the exact old comparison position. Nothing resumes automatically.
 
-Keep these items together:
+**Reuse completed file analysis** is enabled by default and stores local hashes and available OCR/search/media analysis under your Windows profile. Disabling it does not erase older cache records. **Saved scans** stores separately named snapshots; **Open catalog** lets you review a disconnected drive without changing its files. Offline catalog files cannot authorize deleting the only available local copy.
 
-- **Media Review.exe** — the Windows application, including its Python runtime.
-- **models/** — verified offline object-search assets and model license notices.
-- **source/** — editable project, tests, documentation and licenses.
-- **media-review-source.zip** — source prepared for GitHub; excludes model weights and personal media.
+Archive members remain read-only. Similar-image, video, audio, tag and metadata matches need review before removal. Video matching uses eight distributed samples and close-duration checks; it does not find arbitrary overlapping clips. Audio/video playback previews cover the first 120 seconds.
 
-Windows 10 or 11 (64-bit) and Microsoft Edge WebView2 Runtime are required. Source setup and build instructions are in [source/README.md](source/README.md).
+The **source** folder contains GitHub-ready application source without runtime executables, downloaded models, caches or test media. Read **source/README.md** for setup, feature details and limits, and **source/THIRD_PARTY_NOTICES.md** before redistributing the executable or model files.
+
